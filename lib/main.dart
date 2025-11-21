@@ -8,6 +8,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'home.dart';
+// Sender screens
+import 'sender/browse_journeys_screen.dart';
+import 'sender/package_details_screen.dart';
+import 'sender/receiver_info_screen.dart';
+import 'sender/confirmation_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +36,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Application',
+      title: 'FlyBox - Package Delivery',
       debugShowCheckedModeBanner: false,
-      
+      theme: ThemeData(
+        primaryColor: const Color(0xFF006CD5),
+        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Instrument Sans',
+      ),
+
       // Check if user is already logged in
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -46,7 +56,7 @@ class MyApp extends StatelessWidget {
               ),
             );
           }
-          
+
           // If user is logged in, go to home, otherwise go to welcome
           if (snapshot.hasData && snapshot.data != null) {
             return HomeScreen();
@@ -55,7 +65,7 @@ class MyApp extends StatelessWidget {
           }
         },
       ),
-      
+
       routes: {
         '/welcome': (context) => WelcomeScreen(),
         '/register': (context) => RegistrationCarousel(),
@@ -63,13 +73,33 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/userType': (context) => UserTypeScreen(),
         '/travelerSetup': (context) => TravelerSetupScreen(),
+        // Sender flow routes
+        '/browseJourneys': (context) => const BrowseJourneysScreen(),
       },
-      
+
       onGenerateRoute: (settings) {
-        // Handle unknown routes
-        return MaterialPageRoute(
-          builder: (context) => WelcomeScreen(),
-        );
+        // Handle routes with arguments
+        switch (settings.name) {
+          case '/senderPackageDetails':
+            final journey = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => PackageDetailsScreen(journey: journey),
+            );
+          case '/senderReceiverInfo':
+            final data = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => ReceiverInfoScreen(data: data),
+            );
+          case '/senderConfirmation':
+            final data = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => ConfirmationScreen(data: data),
+            );
+          default:
+            return MaterialPageRoute(
+              builder: (context) => WelcomeScreen(),
+            );
+        }
       },
     );
   }

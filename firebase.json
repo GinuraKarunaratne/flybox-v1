@@ -1,1 +1,21 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"flybox-377d6","appId":"1:850281785375:android:268da7937be9e0c9488d2a","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"flybox-377d6","configurations":{"android":"1:850281785375:android:268da7937be9e0c9488d2a","ios":"1:850281785375:ios:0ec08a5aceaa2ab4488d2a","macos":"1:850281785375:ios:0ec08a5aceaa2ab4488d2a","web":"1:850281785375:web:8c1296b0c8fc06da488d2a","windows":"1:850281785375:web:07e67c0c4bd8af25488d2a"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "flyboxbuild",
+          "appId": "1:1006335746106:android:689bca5aeadc5a7b70d503",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "flyboxbuild",
+          "configurations": {
+            "android": "1:1006335746106:android:689bca5aeadc5a7b70d503"
+          }
+        }
+      }
+    }
+  }
+}

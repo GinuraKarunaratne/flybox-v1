@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where flutter)",
+      "Bash(dir)",
+      "Bash(flutter:*)",
+      "Read(//c/Users/elekt/OneDrive/Desktop/Work/Prends/**)",
+      "mcp__ide__getDiagnostics",
+      "Bash(timeout 10 tail:*)",
+      "Bash(adb logcat:*)",
+      "Bash(flutterfire --version:*)",
+      "Bash(dart pub global activate:*)",
+      "Bash(flutterfire login:*)",
+      "Bash(dart pub global list:*)",
+      "Bash(dart pub global run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

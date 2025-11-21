@@ -201,12 +201,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           
                           const SizedBox(height: 40),
                           
-                          // Get started button
+                          // Send Package button
                           Container(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: _onGetStartedPressed,
+                              onPressed: () => Navigator.pushNamed(context, '/sendDestination'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF242424),
                                 foregroundColor: Colors.white,
@@ -216,7 +216,34 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                               child: Text(
-                                'Get Started',
+                                'Send Package',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Instrument Sans',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Get started button (secondary)
+                          Container(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton(
+                              onPressed: _onGetStartedPressed,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF242424),
+                                side: BorderSide(color: const Color(0xFF242424)),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: Text(
+                                'Become a Traveler',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontFamily: 'Instrument Sans',
