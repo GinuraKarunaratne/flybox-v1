@@ -13,6 +13,8 @@ import 'sender/browse_journeys_screen.dart';
 import 'sender/package_details_screen.dart';
 import 'sender/receiver_info_screen.dart';
 import 'sender/confirmation_screen.dart';
+// Main screens
+import 'screens/profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,6 +77,7 @@ class MyApp extends StatelessWidget {
         '/travelerSetup': (context) => TravelerSetupScreen(),
         // Sender flow routes
         '/browseJourneys': (context) => const BrowseJourneysScreen(),
+        '/profile': (context) => ProfileScreen(),
       },
 
       onGenerateRoute: (settings) {

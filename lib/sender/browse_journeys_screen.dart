@@ -12,8 +12,17 @@ class BrowseJourneysScreen extends StatefulWidget {
 class _BrowseJourneysScreenState extends State<BrowseJourneysScreen> {
   final SenderService _senderService = SenderService();
   List<Map<String, dynamic>> _journeys = [];
+  List<Map<String, dynamic>> _filteredJourneys = [];
   bool _isLoading = true;
   String? _errorMessage;
+
+  // Filters
+  String _selectedFromFilter = '';
+  String _selectedToFilter = '';
+  String _selectedPackageTypeFilter = '';
+  List<String> _availableFromLocations = [];
+  List<String> _availableToLocations = [];
+  final List<String> _packageTypes = ['All', 'Documents', 'Electronics', 'Clothing', 'Food Items', 'Medicine'];
 
   @override
   void initState() {
@@ -29,8 +38,20 @@ class _BrowseJourneysScreenState extends State<BrowseJourneysScreen> {
 
     try {
       final journeys = await _senderService.getAvailableJourneys();
+
+      // Extract unique locations
+      Set<String> fromSet = {};
+      Set<String> toSet = {};
+      for (var journey in journeys) {
+        if (journey['from'] != null) fromSet.add(journey['from']);
+        if (journey['to'] != null) toSet.add(journey['to']);
+      }
+
       setState(() {
         _journeys = journeys;
+        _filteredJourneys = journeys;
+        _availableFromLocations = fromSet.toList()..sort();
+        _availableToLocations = toSet.toList()..sort();
         _isLoading = false;
       });
     } catch (e) {
@@ -39,6 +60,222 @@ class _BrowseJourneysScreenState extends State<BrowseJourneysScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredJourneys = _journeys.where((journey) {
+        bool matchesFrom = _selectedFromFilter.isEmpty || journey['from'] == _selectedFromFilter;
+        bool matchesTo = _selectedToFilter.isEmpty || journey['to'] == _selectedToFilter;
+        bool matchesPackageType = _selectedPackageTypeFilter.isEmpty ||
+                                  _selectedPackageTypeFilter == 'All' ||
+                                  journey['packageType'] == _selectedPackageTypeFilter ||
+                                  journey['packageType'] == 'All';
+        return matchesFrom && matchesTo && matchesPackageType;
+      }).toList();
+    });
+  }
+
+  void _showFilters() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Filter Journeys',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Instrument Sans',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setModalState(() {
+                        _selectedFromFilter = '';
+                        _selectedToFilter = '';
+                        _selectedPackageTypeFilter = '';
+                      });
+                      setState(() {
+                        _selectedFromFilter = '';
+                        _selectedToFilter = '';
+                        _selectedPackageTypeFilter = '';
+                      });
+                      _applyFilters();
+                    },
+                    child: Text(
+                      'Clear All',
+                      style: TextStyle(
+                        fontFamily: 'Instrument Sans',
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+
+              // From Filter
+              Text(
+                'From',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Instrument Sans',
+                  color: Colors.black54,
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedFromFilter.isEmpty ? null : _selectedFromFilter,
+                    hint: Text('Any location', style: TextStyle(fontFamily: 'Instrument Sans')),
+                    isExpanded: true,
+                    items: _availableFromLocations.map((location) {
+                      return DropdownMenuItem(
+                        value: location,
+                        child: Text(location, style: TextStyle(fontFamily: 'Instrument Sans')),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setModalState(() => _selectedFromFilter = value ?? '');
+                      setState(() => _selectedFromFilter = value ?? '');
+                    },
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16),
+
+              // To Filter
+              Text(
+                'To',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Instrument Sans',
+                  color: Colors.black54,
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedToFilter.isEmpty ? null : _selectedToFilter,
+                    hint: Text('Any location', style: TextStyle(fontFamily: 'Instrument Sans')),
+                    isExpanded: true,
+                    items: _availableToLocations.map((location) {
+                      return DropdownMenuItem(
+                        value: location,
+                        child: Text(location, style: TextStyle(fontFamily: 'Instrument Sans')),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setModalState(() => _selectedToFilter = value ?? '');
+                      setState(() => _selectedToFilter = value ?? '');
+                    },
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16),
+
+              // Package Type Filter
+              Text(
+                'Package Type',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Instrument Sans',
+                  color: Colors.black54,
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedPackageTypeFilter.isEmpty ? null : _selectedPackageTypeFilter,
+                    hint: Text('Any type', style: TextStyle(fontFamily: 'Instrument Sans')),
+                    isExpanded: true,
+                    items: _packageTypes.map((type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type, style: TextStyle(fontFamily: 'Instrument Sans')),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setModalState(() => _selectedPackageTypeFilter = value ?? '');
+                      setState(() => _selectedPackageTypeFilter = value ?? '');
+                    },
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 24),
+
+              // Apply Button
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _applyFilters();
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF006CD5),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: Text(
+                    'Apply Filters',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Instrument Sans',
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _selectJourney(Map<String, dynamic> journey) {
@@ -66,20 +303,29 @@ class _BrowseJourneysScreenState extends State<BrowseJourneysScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.arrow_back, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Available Journeys',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontFamily: 'Instrument Sans',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Available Journeys',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontFamily: 'Instrument Sans',
-                            fontWeight: FontWeight.w400,
-                          ),
+                        IconButton(
+                          icon: Icon(Icons.filter_list, color: Colors.white),
+                          onPressed: _showFilters,
                         ),
                       ],
                     ),
@@ -206,9 +452,9 @@ class _BrowseJourneysScreenState extends State<BrowseJourneysScreen> {
     return RefreshIndicator(
       onRefresh: _loadJourneys,
       child: ListView.builder(
-        itemCount: _journeys.length,
+        itemCount: _filteredJourneys.length,
         itemBuilder: (context, index) {
-          return _buildJourneyCard(_journeys[index]);
+          return _buildJourneyCard(_filteredJourneys[index]);
         },
       ),
     );
