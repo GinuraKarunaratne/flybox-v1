@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'navigation_bar.dart' as nav;
 
 class UserTypeScreen extends StatefulWidget {
   @override
@@ -18,7 +17,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
       if (userType == 'Traveler') {
         Navigator.pushReplacementNamed(context, '/travelerSetup');
       } else {
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/browseJourneys');
       }
     });
   }

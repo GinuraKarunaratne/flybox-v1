@@ -79,10 +79,24 @@ class _TravelerSetupScreenState extends State<TravelerSetupScreen> {
         throw Exception('Firestore connection failed: $e');
       }
 
+      // Fetch user data to get the name
+      String userName = 'Unknown';
+      try {
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(currentUser.uid).get();
+        if (userDoc.exists) {
+          Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+          userName = userData?['fullName'] ?? userData?['name'] ?? currentUser.email?.split('@')[0] ?? 'Unknown';
+        }
+      } catch (e) {
+        print('🔥 [DEBUG] Could not fetch user name: $e');
+        userName = currentUser.email?.split('@')[0] ?? 'Unknown';
+      }
+
       // Prepare simple test data first
       Map<String, dynamic> journeyData = {
         'userId': currentUser.uid,
         'userEmail': currentUser.email ?? '',
+        'userName': userName,
         'testField': 'test_value_${DateTime.now().millisecondsSinceEpoch}',
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'active',
@@ -132,34 +146,46 @@ class _TravelerSetupScreenState extends State<TravelerSetupScreen> {
       }
       if (_weightController.text.trim().isNotEmpty) {
         try {
-          journeyData['availableWeight'] = double.parse(_weightController.text.trim());
+          double weight = double.parse(_weightController.text.trim());
+          journeyData['availableWeight'] = weight;
+          journeyData['remainingWeight'] = weight; // Initially same as available weight
           print('🔥 [DEBUG] Added weight: ${_weightController.text.trim()}');
         } catch (e) {
           journeyData['weightText'] = _weightController.text.trim();
           print('🔥 [DEBUG] Added weight as text: ${_weightController.text.trim()}');
         }
       }
+      // Add dimensions as a structured object
+      Map<String, dynamic> dimensions = {};
       if (_lengthController.text.trim().isNotEmpty) {
         try {
-          journeyData['length'] = double.parse(_lengthController.text.trim());
+          dimensions['length'] = double.parse(_lengthController.text.trim());
         } catch (e) {
-          journeyData['lengthText'] = _lengthController.text.trim();
+          dimensions['length'] = 0.0;
         }
       }
       if (_widthController.text.trim().isNotEmpty) {
         try {
-          journeyData['width'] = double.parse(_widthController.text.trim());
+          dimensions['width'] = double.parse(_widthController.text.trim());
         } catch (e) {
-          journeyData['widthText'] = _widthController.text.trim();
+          dimensions['width'] = 0.0;
         }
       }
       if (_heightController.text.trim().isNotEmpty) {
         try {
-          journeyData['height'] = double.parse(_heightController.text.trim());
+          dimensions['height'] = double.parse(_heightController.text.trim());
         } catch (e) {
-          journeyData['heightText'] = _heightController.text.trim();
+          dimensions['height'] = 0.0;
         }
       }
+      if (dimensions.isNotEmpty) {
+        journeyData['dimensions'] = dimensions;
+      }
+
+      // Add status and availability fields
+      journeyData['status'] = 'active';
+      journeyData['isAvailable'] = true;
+      journeyData['createdAt'] = FieldValue.serverTimestamp();
 
       print('🔥 [DEBUG] Final data to save: $journeyData');
       print('🔥 [DEBUG] Data size: ${journeyData.length} fields');
@@ -216,49 +242,6 @@ class _TravelerSetupScreenState extends State<TravelerSetupScreen> {
     }
   }
 
-  /// Test database connection
-  Future<void> _testDatabaseConnection() async {
-    try {
-      print('🔥 [TEST] Testing database connection...');
-      
-      final User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        print('🔥 [TEST] No user logged in');
-        return;
-      }
-
-      // Try to read from journeys collection
-      QuerySnapshot testRead = await _firestore
-          .collection('journeys')
-          .limit(1)
-          .get()
-          .timeout(Duration(seconds: 5));
-      
-      print('🔥 [TEST] Read test: SUCCESS (${testRead.docs.length} docs)');
-
-      // Try to write a test document
-      DocumentReference testDoc = await _firestore
-          .collection('journeys')
-          .add({
-            'userId': user.uid,
-            'testConnection': true,
-            'timestamp': FieldValue.serverTimestamp(),
-          })
-          .timeout(Duration(seconds: 5));
-      
-      print('🔥 [TEST] Write test: SUCCESS (${testDoc.id})');
-
-      // Clean up test document
-      await testDoc.delete();
-      print('🔥 [TEST] Cleanup: SUCCESS');
-
-      _showMessage('✅ Database connection working!');
-      
-    } catch (e) {
-      print('🔥 [TEST] Connection test failed: $e');
-      _showMessage('❌ Database connection failed: $e', isError: true);
-    }
-  }
 
   /// Submit the form and save to database
   Future<void> _submitForm() async {

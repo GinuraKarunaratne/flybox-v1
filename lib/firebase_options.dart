@@ -23,11 +23,20 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for iOS - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macOS - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -41,48 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB1PD4ld-fH3w16JLKlr7VgeHrDEJYV8SY',
-    appId: '1:850281785375:web:8c1296b0c8fc06da488d2a',
-    messagingSenderId: '850281785375',
-    projectId: 'flybox-377d6',
-    authDomain: 'flybox-377d6.firebaseapp.com',
-    storageBucket: 'flybox-377d6.firebasestorage.app',
-    measurementId: 'G-954H7JRGVB',
+    apiKey: 'AIzaSyDtssJyldXn5-TGJ9zDHcQ5U12TcXayEV4',
+    appId: '1:1006335746106:web:PLACEHOLDER',
+    messagingSenderId: '1006335746106',
+    projectId: 'flyboxbuild',
+    authDomain: 'flyboxbuild.firebaseapp.com',
+    storageBucket: 'flyboxbuild.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD7v9EMZuuILCLyVcAAwNkDvFcHpaStiz8',
-    appId: '1:850281785375:android:268da7937be9e0c9488d2a',
-    messagingSenderId: '850281785375',
-    projectId: 'flybox-377d6',
-    storageBucket: 'flybox-377d6.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCPVfIAu9QfiL_xy737FyXmChJfFAJbWvU',
-    appId: '1:850281785375:ios:0ec08a5aceaa2ab4488d2a',
-    messagingSenderId: '850281785375',
-    projectId: 'flybox-377d6',
-    storageBucket: 'flybox-377d6.firebasestorage.app',
-    iosBundleId: 'com.example.flutterApplication1',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCPVfIAu9QfiL_xy737FyXmChJfFAJbWvU',
-    appId: '1:850281785375:ios:0ec08a5aceaa2ab4488d2a',
-    messagingSenderId: '850281785375',
-    projectId: 'flybox-377d6',
-    storageBucket: 'flybox-377d6.firebasestorage.app',
-    iosBundleId: 'com.example.flutterApplication1',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyB1PD4ld-fH3w16JLKlr7VgeHrDEJYV8SY',
-    appId: '1:850281785375:web:07e67c0c4bd8af25488d2a',
-    messagingSenderId: '850281785375',
-    projectId: 'flybox-377d6',
-    authDomain: 'flybox-377d6.firebaseapp.com',
-    storageBucket: 'flybox-377d6.firebasestorage.app',
-    measurementId: 'G-BYH6J5K3M9',
+    apiKey: 'AIzaSyDtssJyldXn5-TGJ9zDHcQ5U12TcXayEV4',
+    appId: '1:1006335746106:android:689bca5aeadc5a7b70d503',
+    messagingSenderId: '1006335746106',
+    projectId: 'flyboxbuild',
+    storageBucket: 'flyboxbuild.firebasestorage.app',
   );
 }
