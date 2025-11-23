@@ -15,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String _userName = 'User';
+  
 
   @override
   void initState() {
