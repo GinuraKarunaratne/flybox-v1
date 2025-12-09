@@ -503,7 +503,7 @@ class _JourneyDetailScreenState extends State<JourneyDetailScreen> {
         children: [
           Icon(icon, size: 16, color: isWhite ? Colors.white : Colors.black54),
           SizedBox(width: 6),
-          Expanded(
+          Flexible(
             child: Text(
               text,
               style: TextStyle(
