@@ -93,9 +93,16 @@ service cloud.firestore {
     // Bookings collection - sender booking requests
     match /bookings/{bookingId} {
       // Users can read bookings they're involved in (sender or traveler)
-      allow read: if isAuthenticated() &&
-                     (resource.data.senderId == request.auth.uid ||
-                      resource.data.travelerId == request.auth.uid);
+      // Also allow the owner of the related journey to read bookings for that journey.
+      // This covers the case where a booking is created by a sender and the journey
+      // owner (traveler) needs to view all bookings for their journey even if
+      // `travelerId` isn't set on the booking document yet.
+      allow read: if isAuthenticated() && (
+                     resource.data.senderId == request.auth.uid ||
+                     resource.data.travelerId == request.auth.uid ||
+                     (resource.data.journeyId != null &&
+                      get(/databases/$(database)/documents/journeys/$(resource.data.journeyId)).data.userId == request.auth.uid)
+                   );
 
       // Only authenticated users can create bookings
       allow create: if isAuthenticated() &&

@@ -182,7 +182,8 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                   height: 45,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      // Ensure user lands on the home screen after registration
+                      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white.withOpacity(0.2),
